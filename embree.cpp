@@ -215,27 +215,27 @@ rtc::QuaternionDecomposition::QuaternionDecomposition()
 	rtcInitQuaternionDecomposition(&qdecomp);
 }
 
-void rtc::QuaternionDecomposition::SetQuaternion(float r, float i, float j, float k)
+void rtc::QuaternionDecomposition::setQuaternion(float r, float i, float j, float k)
 {
 	rtcQuaternionDecompositionSetQuaternion(&qdecomp, r, i, j, k);
 }
 
-void rtc::QuaternionDecomposition::SetScale(float scale_x, float scale_y, float scale_z)
+void rtc::QuaternionDecomposition::setScale(float scale_x, float scale_y, float scale_z)
 {
 	rtcQuaternionDecompositionSetScale(&qdecomp, scale_x, scale_y, scale_z);
 }
 
-void rtc::QuaternionDecomposition::SetSkew(float skew_xy, float skew_xz, float skew_yz)
+void rtc::QuaternionDecomposition::setSkew(float skew_xy, float skew_xz, float skew_yz)
 {
 	rtcQuaternionDecompositionSetSkew(&qdecomp, skew_xy, skew_xz, skew_yz);
 }
 
-void rtc::QuaternionDecomposition::SetShift(float shift_x, float shift_y, float shift_z)
+void rtc::QuaternionDecomposition::setShift(float shift_x, float shift_y, float shift_z)
 {
 	rtcQuaternionDecompositionSetShift(&qdecomp, shift_x, shift_y, shift_z);
 }
 
-void rtc::QuaternionDecomposition::SetTranslation(float trans_x, float trans_y, float trans_z)
+void rtc::QuaternionDecomposition::setTranslation(float trans_x, float trans_y, float trans_z)
 {
 	rtcQuaternionDecompositionSetTranslation(&qdecomp, trans_x, trans_y, trans_z);
 }

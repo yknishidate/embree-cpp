@@ -462,15 +462,15 @@ namespace rtc
 	public:
 		QuaternionDecomposition();
 
-		void SetQuaternion(float r, float i, float j, float k);
+		void setQuaternion(float r, float i, float j, float k);
 
-		void SetScale(float scale_x, float scale_y, float scale_z);
+		void setScale(float scale_x, float scale_y, float scale_z);
 
-		void SetSkew(float skew_xy, float skew_xz, float skew_yz);
+		void setSkew(float skew_xy, float skew_xz, float skew_yz);
 
-		void SetShift(float shift_x, float shift_y, float shift_z);
+		void setShift(float shift_x, float shift_y, float shift_z);
 
-		void SetTranslation(float trans_x, float trans_y, float trans_z);
+		void setTranslation(float trans_x, float trans_y, float trans_z);
 
 	private:
 		RTCQuaternionDecomposition qdecomp;
