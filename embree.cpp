@@ -22,9 +22,9 @@ RTCPointQueryContext& rtc::PointQueryContext::get()
 }
 
 // rtcore_device.h
-rtc::Device::Device()
+rtc::Device::Device(const char* config)
 {
-	device = rtcNewDevice(NULL);
+	device = rtcNewDevice(config);
 }
 
 rtc::Device::Device(RTCDevice device)

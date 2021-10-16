@@ -191,7 +191,7 @@ namespace rtc
 	class Device
 	{
 	public:
-		Device();
+		Device(const char* config = nullptr);
 
 		explicit Device(RTCDevice device);
 
