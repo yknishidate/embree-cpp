@@ -88,6 +88,11 @@ void rtc::Buffer::retain()
 	rtcRetainBuffer(buffer);
 }
 
+RTCBuffer& rtc::Buffer::get()
+{
+	return buffer;
+}
+
 rtc::Geometry::Geometry(RTCGeometry geom)
 	: geom(geom)
 {
@@ -113,6 +118,32 @@ void rtc::Geometry::retain() const
 void rtc::Geometry::commit() const
 {
 	rtcCommitGeometry(geom);
+}
+
+void rtc::Geometry::enable() const
+{
+	rtcEnableGeometry(geom);
+}
+
+void rtc::Geometry::disable() const
+{
+	rtcDisableGeometry(geom);
+}
+
+void rtc::Geometry::setBuffer(BufferType type, unsigned int slot, Format format, Buffer buffer, size_t byteOffset, size_t byteStride, size_t itemCount)
+{
+	auto rtcType = static_cast<RTCBufferType>(type);
+	auto rtcFormat = static_cast<RTCFormat>(format);
+	rtcSetGeometryBuffer(geom, rtcType, slot, rtcFormat, buffer.get(),
+						 byteOffset, byteStride, itemCount);
+}
+
+void rtc::Geometry::setSharedBuffer(BufferType type, unsigned int slot, Format format, const void* ptr, size_t byteOffset, size_t byteStride, size_t itemCount)
+{
+	auto rtcType = static_cast<RTCBufferType>(type);
+	auto rtcFormat = static_cast<RTCFormat>(format);
+	rtcSetSharedGeometryBuffer(geom, rtcType, slot, rtcFormat, ptr,
+							   byteOffset, byteStride, itemCount);
 }
 
 void* rtc::Geometry::setNewBuffer(BufferType type, unsigned int slot, Format format, size_t byteStride, size_t itemCount)

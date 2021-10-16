@@ -1,5 +1,6 @@
 #pragma once
 #include <embree3/rtcore.h>
+#include <vector>
 
 namespace rtc
 {
@@ -249,6 +250,8 @@ namespace rtc
 
 		void retain();
 
+		RTCBuffer& get();
+
 	private:
 		RTCBuffer buffer;
 	};
@@ -331,17 +334,24 @@ namespace rtc
 
 		void commit() const;
 
-		void enable() const
-		{
-			rtcEnableGeometry(geom);
-		}
+		void enable() const;
 
-		void disable() const
-		{
-			rtcDisableGeometry(geom);
-		}
+		void disable() const;
 
 		// TODO: support funcs
+
+		void setBuffer(BufferType type, unsigned int slot, Format format, Buffer buffer,
+					   size_t byteOffset, size_t byteStride, size_t itemCount);
+
+		void setSharedBuffer(BufferType type, unsigned int slot, Format format, const void* ptr,
+							 size_t byteOffset, size_t byteStride, size_t itemCount);
+
+		template<typename T>
+		void setSharedBuffer(BufferType type, unsigned int slot, Format format,
+							 const std::vector<T>& data)
+		{
+			setSharedBuffer(type, slot, format, data.data(), 0, sizeof(T), data.size());
+		}
 
 		void* setNewBuffer(BufferType type, unsigned int slot, Format format,
 						   size_t byteStride, size_t itemCount);
