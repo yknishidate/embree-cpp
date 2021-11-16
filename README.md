@@ -1,6 +1,6 @@
 # embree-cpp
 
-My tiny embree wrapper
+Embree C++ wrapper
 
 ## usage
 
