@@ -117,9 +117,15 @@ namespace rtc
 	class IntersectContext
 	{
 	public:
-		IntersectContext();
+		IntersectContext()
+		{
+			rtcInitIntersectContext(&context);
+		}
 
-		RTCIntersectContext& get();
+		RTCIntersectContext& get()
+		{
+			return context;
+		}
 
 	private:
 		RTCIntersectContext context;
@@ -134,9 +140,15 @@ namespace rtc
 	class PointQueryContext
 	{
 	public:
-		PointQueryContext();
+		PointQueryContext()
+		{
+			rtcInitPointQueryContext(&context);
+		}
 
-		RTCPointQueryContext& get();
+		RTCPointQueryContext& get()
+		{
+			return context;
+		}
 
 	private:
 		RTCPointQueryContext context;
@@ -190,23 +202,47 @@ namespace rtc
 	class Device
 	{
 	public:
-		Device(const char* config = nullptr);
+		Device(const char* config = nullptr)
+		{
+			device = rtcNewDevice(config);
+		}
 
-		explicit Device(RTCDevice device);
+		explicit Device(RTCDevice device)
+			: device(device)
+		{
+		}
 
-		~Device();
+		~Device()
+		{
+			rtcReleaseDevice(device);
+		}
 
-		void retain();
+		void retain()
+		{
+			rtcRetainDevice(device);
+		}
 
-		ssize_t getProperty(DeviceProperty prop) const;
+		ssize_t getProperty(DeviceProperty prop) const
+		{
+			return rtcGetDeviceProperty(device, static_cast<RTCDeviceProperty>(prop));
+		}
 
-		void setProperty(DeviceProperty prop, ssize_t value) const;
+		void setProperty(DeviceProperty prop, ssize_t value) const
+		{
+			rtcSetDeviceProperty(device, static_cast<RTCDeviceProperty>(prop), value);
+		}
 
-		Error getError() const;
+		Error getError() const
+		{
+			return static_cast<Error>(rtcGetDeviceError(device));
+		}
 
 		// TODO: support callback
 
-		const RTCDevice& get() const;
+		const RTCDevice& get() const
+		{
+			return device;
+		}
 
 	private:
 		RTCDevice device;
@@ -240,17 +276,35 @@ namespace rtc
 	public:
 		Buffer() = default;
 
-		Buffer(const Device& device, size_t byteSize);
+		Buffer(const Device& device, size_t byteSize)
+		{
+			buffer = rtcNewBuffer(device.get(), byteSize);
+		}
 
-		Buffer(const Device& device, void* ptr, size_t byteSize);
+		Buffer(const Device& device, void* ptr, size_t byteSize)
+		{
+			buffer = rtcNewSharedBuffer(device.get(), ptr, byteSize);
+		}
 
-		~Buffer();
+		~Buffer()
+		{
+			rtcReleaseBuffer(buffer);
+		}
 
-		void* getData() const;
+		void* getData() const
+		{
+			return rtcGetBufferData(buffer);
+		}
 
-		void retain();
+		void retain()
+		{
+			rtcRetainBuffer(buffer);
+		}
 
-		RTCBuffer& get();
+		RTCBuffer& get()
+		{
+			return buffer;
+		}
 
 	private:
 		RTCBuffer buffer;
@@ -324,27 +378,60 @@ namespace rtc
 	public:
 		Geometry() = default;
 
-		explicit Geometry(RTCGeometry geom);
+		explicit Geometry(RTCGeometry geom)
+			: geom(geom)
+		{
+		}
 
-		Geometry(const Device& device, GeometryType type);
+		Geometry(const Device& device, GeometryType type)
+		{
+			geom = rtcNewGeometry(device.get(), static_cast<RTCGeometryType>(type));
+		}
 
-		~Geometry();
+		~Geometry()
+		{
+			rtcReleaseGeometry(geom);
+		}
 
-		void retain() const;
+		void retain() const
+		{
+			rtcRetainGeometry(geom);
+		}
 
-		void commit() const;
+		void commit() const
+		{
+			rtcCommitGeometry(geom);
+		}
 
-		void enable() const;
+		void enable() const
+		{
+			rtcEnableGeometry(geom);
+		}
 
-		void disable() const;
+		void disable() const
+		{
+			rtcDisableGeometry(geom);
+		}
 
 		// TODO: support funcs
 
 		void setBuffer(BufferType type, unsigned int slot, Format format, Buffer buffer,
-					   size_t byteOffset, size_t byteStride, size_t itemCount);
+					   size_t byteOffset, size_t byteStride, size_t itemCount)
+		{
+			auto rtcType = static_cast<RTCBufferType>(type);
+			auto rtcFormat = static_cast<RTCFormat>(format);
+			rtcSetGeometryBuffer(geom, rtcType, slot, rtcFormat, buffer.get(),
+								 byteOffset, byteStride, itemCount);
+		}
 
 		void setSharedBuffer(BufferType type, unsigned int slot, Format format, const void* ptr,
-							 size_t byteOffset, size_t byteStride, size_t itemCount);
+							 size_t byteOffset, size_t byteStride, size_t itemCount)
+		{
+			auto rtcType = static_cast<RTCBufferType>(type);
+			auto rtcFormat = static_cast<RTCFormat>(format);
+			rtcSetSharedGeometryBuffer(geom, rtcType, slot, rtcFormat, ptr,
+									   byteOffset, byteStride, itemCount);
+		}
 
 		template<typename T>
 		void setSharedBuffer(BufferType type, unsigned int slot, Format format,
@@ -354,7 +441,12 @@ namespace rtc
 		}
 
 		void* setNewBuffer(BufferType type, unsigned int slot, Format format,
-						   size_t byteStride, size_t itemCount);
+						   size_t byteStride, size_t itemCount)
+		{
+			auto rtcType = static_cast<RTCBufferType>(type);
+			auto rtcFormat = static_cast<RTCFormat>(format);
+			return rtcSetNewGeometryBuffer(geom, rtcType, slot, rtcFormat, byteStride, itemCount);
+		}
 
 		template<typename T>
 		T* setNewBuffer(BufferType type, unsigned int slot, Format format, size_t itemCount)
@@ -362,7 +454,10 @@ namespace rtc
 			return static_cast<T*>(setNewBuffer(type, slot, format, sizeof(T), itemCount));
 		}
 
-		const RTCGeometry& get() const;
+		const RTCGeometry& get() const
+		{
+			return geom;
+		}
 
 	private:
 		RTCGeometry geom;
@@ -385,33 +480,69 @@ namespace rtc
 	class Scene
 	{
 	public:
-		explicit Scene(const Device& device);
+		explicit Scene(const Device& device)
+		{
+			scene = rtcNewScene(device.get());
+		}
 
-		~Scene();
+		~Scene()
+		{
+			rtcReleaseScene(scene);
+		}
 
-		Device getDevice() const;
+		Device getDevice() const
+		{
+			return Device{ rtcGetSceneDevice(scene) };
+		}
 
-		void retain() const;
+		void retain() const
+		{
+			rtcRetainScene(scene);
+		}
 
-		unsigned int attachGeometry(const Geometry& geom) const;
+		unsigned int attachGeometry(const Geometry& geom) const
+		{
+			return rtcAttachGeometry(scene, geom.get());
+		}
 
-		void attachGeometryByID(const Geometry& geom, unsigned int geomID) const;
+		void attachGeometryByID(const Geometry& geom, unsigned int geomID) const
+		{
+			rtcAttachGeometryByID(scene, geom.get(), geomID);
+		}
 
-		void detachGeometry(unsigned int geomID) const;
+		void detachGeometry(unsigned int geomID) const
+		{
+			rtcDetachGeometry(scene, geomID);
+		}
 
-		Geometry getGeometry(unsigned int geomID) const;
+		Geometry getGeometry(unsigned int geomID) const
+		{
+			return Geometry{ rtcGetGeometry(scene, geomID) };
+		}
 
-		void commit() const;
+		void commit() const
+		{
+			rtcCommitScene(scene);
+		}
 
-		void joinCommit() const;
+		void joinCommit() const
+		{
+			rtcCommitScene(scene);
+		}
 
-		// support callback
+		// TODO: support callback
 
-		// support funcs
+		// TODO: support funcs
 
-		void intersect1(IntersectContext& context, RayHit& rayhit);
+		void intersect1(IntersectContext& context, RayHit& rayhit)
+		{
+			rtcIntersect1(scene, &context.get(), &rayhit);
+		}
 
-		const RTCScene& get() const;
+		const RTCScene& get() const
+		{
+			return scene;
+		}
 
 	private:
 		RTCScene scene;
@@ -430,13 +561,13 @@ namespace rtc
 			return rtcThreadLocalAlloc(allocator, bytes, align);
 		}
 
-		// support callback
+		// TODO: support callback
 
 	private:
 		RTCThreadLocalAllocator allocator;
 	};
 
-	// support callback
+	// TODO: support callback
 
 	enum class BuildFlags
 	{
@@ -454,13 +585,25 @@ namespace rtc
 	class BVH
 	{
 	public:
-		explicit BVH(const Device& device);
+		explicit BVH(const Device& device)
+		{
+			bvh = rtcNewBVH(device.get());
+		}
 
-		~BVH();
+		~BVH()
+		{
+			rtcReleaseBVH(bvh);
+		}
 
-		void* build(const BuildArguments& args) const;
+		void* build(const BuildArguments& args) const
+		{
+			return rtcBuildBVH(&args);
+		}
 
-		void retain() const;
+		void retain() const
+		{
+			rtcRetainBVH(bvh);
+		}
 
 	private:
 		RTCBVH bvh;
@@ -470,17 +613,35 @@ namespace rtc
 	class QuaternionDecomposition
 	{
 	public:
-		QuaternionDecomposition();
+		QuaternionDecomposition()
+		{
+			rtcInitQuaternionDecomposition(&qdecomp);
+		}
 
-		void setQuaternion(float r, float i, float j, float k);
+		void setQuaternion(float r, float i, float j, float k)
+		{
+			rtcQuaternionDecompositionSetQuaternion(&qdecomp, r, i, j, k);
+		}
 
-		void setScale(float scale_x, float scale_y, float scale_z);
+		void setScale(float scale_x, float scale_y, float scale_z)
+		{
+			rtcQuaternionDecompositionSetScale(&qdecomp, scale_x, scale_y, scale_z);
+		}
 
-		void setSkew(float skew_xy, float skew_xz, float skew_yz);
+		void setSkew(float skew_xy, float skew_xz, float skew_yz)
+		{
+			rtcQuaternionDecompositionSetSkew(&qdecomp, skew_xy, skew_xz, skew_yz);
+		}
 
-		void setShift(float shift_x, float shift_y, float shift_z);
+		void setShift(float shift_x, float shift_y, float shift_z)
+		{
+			rtcQuaternionDecompositionSetShift(&qdecomp, shift_x, shift_y, shift_z);
+		}
 
-		void setTranslation(float trans_x, float trans_y, float trans_z);
+		void setTranslation(float trans_x, float trans_y, float trans_z)
+		{
+			rtcQuaternionDecompositionSetTranslation(&qdecomp, trans_x, trans_y, trans_z);
+		}
 
 	private:
 		RTCQuaternionDecomposition qdecomp;

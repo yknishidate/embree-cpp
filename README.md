@@ -1,10 +1,17 @@
 # embree-cpp
 
-Embree C++ wrapper
+Header only embree wrapper
 
-## usage
+## Features
 
-### constructor & default arg
+- Constructor
+- Default args
+- Scoped enum
+- Member funcs
+- Reference args(not pointer)
+- std::vector args
+
+### Constructor & Default args
 
 ```cpp
 // original
@@ -14,7 +21,7 @@ RTCDevice device = rtcNewDevice(NULL);
 rtc::Device device;
 ```
 
-### scoped enum
+### Scoped enum
 
 ```cpp
 // original
@@ -24,7 +31,7 @@ RTCGeometry geom = rtcNewGeometry(device, RTC_GEOMETRY_TYPE_TRIANGLE);
 rtc::Geometry geom{ device, rtc::GeometryType::Triangle };
 ```
 
-### member func & reference arg(not pointer)
+### Member funcs & Reference args(not pointer)
 
 ```cpp
 // original
@@ -34,7 +41,7 @@ rtcIntersect1(scene, &context, &rayhit);
 scene.intersect1(context, rayhit);
 ```
 
-### std::vector arg
+### std::vector args
 
 ```cpp
 std::vector<Vertex> vertices{ /* data */ };
